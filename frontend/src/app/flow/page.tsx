@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
@@ -6,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRightLeft, TreePine } from "lucide-react";
+import { SankeyFlow } from "@/components/charts/SankeyFlow";
 
 interface Program { program: string; department: string; grant_count: number; total_value: number; recipient_count: number; first_year: number; last_year: number }
 interface Province { province: string; grant_count: number; total_value: number; recipient_count: number; program_count: number }
@@ -14,11 +16,13 @@ export default function FlowPage() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sankey, setSankey] = useState<{dept_to_program: any[]; program_to_recipient: any[]} | null>(null);
   useEffect(() => {
     Promise.all([
       fetchAPI<Program[]>("/flow/by-program", { limit: 25 }),
-      fetchAPI<Province[]>("/flow/by-province")
-    ]).then(([p, pv]) => { setPrograms(p); setProvinces(pv); }).catch(() => {}).finally(() => setLoading(false));
+      fetchAPI<Province[]>("/flow/by-province"),
+      fetchAPI<{dept_to_program: any[]; program_to_recipient: any[]}>("/flow/sankey", { limit: 15 }),
+    ]).then(([p, pv, s]) => { setPrograms(p); setProvinces(pv); setSankey(s); }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   return (
@@ -33,6 +37,22 @@ export default function FlowPage() {
             <p className="text-sm text-emerald-400/60">Where climate billions actually go — by program and province</p>
           </div>
         </div>
+
+
+        {/* Sankey Flow Diagram */}
+        {sankey && (
+          <Card className="border-emerald-900/30 bg-[#0a1210]">
+            <CardHeader>
+              <CardTitle className="text-base text-emerald-50 flex items-center gap-2">
+                <ArrowRightLeft className="h-4 w-4 text-emerald-400" />
+                Climate Money Flow: Department → Program → Recipient
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SankeyFlow data={sankey} height={450} />
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-6">
           <Card className="border-emerald-900/30 bg-[#0a1210]">

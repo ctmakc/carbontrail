@@ -40,7 +40,7 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
   const requestAI = async () => {
     setAiLoading(true);
     try {
-      const res = await fetch(`http://localhost:8902/api/ai/explain-recipient/${encodeURIComponent(decodedName)}`, { method: "GET" });
+      const res = await fetch(`/api/ai/explain-recipient/${encodeURIComponent(decodedName)}`, { method: "GET" });
       const json = await res.json();
       setAiExplanation(json.explanation || "No explanation available.");
     } catch {

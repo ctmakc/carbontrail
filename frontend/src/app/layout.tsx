@@ -9,7 +9,19 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: "CarbonTrail — Follow the Green Money",
-  description: "Climate spending intelligence for Canadian public funding.",
+  description: "Climate spending intelligence for Canadian public funding. Tracking $321B+ in contracts, grants, and lobbying across 5.2M public records.",
+  keywords: ["climate", "canada", "transparency", "public funding", "lobbying", "ESG", "cleantech", "open data"],
+  openGraph: {
+    title: "CarbonTrail — Follow the Green Money",
+    description: "Where do Canada's climate billions go? Track $321B+ in contracts, grants, and lobbying data.",
+    type: "website",
+    siteName: "CarbonTrail",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CarbonTrail — Follow the Green Money",
+    description: "Climate spending intelligence for Canadian public funding.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
