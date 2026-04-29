@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState, use } from "react";
 import { AppShell } from "@/components/layout/app-shell";
@@ -7,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Building2, DollarSign, FileText, Leaf, ShieldAlert, Sparkles, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { LobbyNetwork } from "@/components/charts/LobbyNetwork";
 
 interface Grant { program: string; department: string; agreement_value: number; agreement_start_date: string; description_en: string }
 interface Contract { description_en: string; department: string; contract_value: number; contract_date: string; is_sole_source: boolean; number_of_bids: number }
@@ -20,6 +22,7 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
   const [data, setData] = useState<DetailData | null>(null);
   const [aiExplanation, setAiExplanation] = useState<string>("");
   const [aiLoading, setAiLoading] = useState(false);
+  const [graphData, setGraphData] = useState<{nodes: any[]; links: any[]} | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,6 +30,8 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
       .then(setData)
       .catch(() => {})
       .finally(() => setLoading(false));
+    fetchAPI<{nodes: any[]; links: any[]}>(`/graph/entity-connections/${encodeURIComponent(decodedName)}`)
+      .then(setGraphData).catch(() => {});
   }, [decodedName]);
 
   const requestAI = async () => {
@@ -173,6 +178,20 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
                 </CardContent>
               </Card>
             </div>
+
+            {/* Connection Graph */}
+            {graphData && graphData.nodes.length > 1 && (
+              <Card className="border-emerald-900/30 bg-[#0a1210]">
+                <CardHeader>
+                  <CardTitle className="text-base text-emerald-50 flex items-center gap-2">
+                    <Building2 className="h-4 w-4 text-indigo-400" /> Connection Graph
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <LobbyNetwork data={graphData} height={350} />
+                </CardContent>
+              </Card>
+            )}
 
             {/* Lobbying detail */}
             {data?.lobbying && (

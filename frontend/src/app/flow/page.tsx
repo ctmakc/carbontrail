@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRightLeft, TreePine } from "lucide-react";
 
@@ -12,9 +13,12 @@ interface Province { province: string; grant_count: number; total_value: number;
 export default function FlowPage() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [provinces, setProvinces] = useState<Province[]>([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetchAPI<Program[]>("/flow/by-program", { limit: 25 }).then(setPrograms).catch(() => {});
-    fetchAPI<Province[]>("/flow/by-province").then(setProvinces).catch(() => {});
+    Promise.all([
+      fetchAPI<Program[]>("/flow/by-program", { limit: 25 }),
+      fetchAPI<Province[]>("/flow/by-province")
+    ]).then(([p, pv]) => { setPrograms(p); setProvinces(pv); }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   return (
