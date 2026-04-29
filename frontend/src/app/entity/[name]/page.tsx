@@ -6,8 +6,9 @@ import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, DollarSign, FileText, Leaf, ShieldAlert, Sparkles, ArrowLeft } from "lucide-react";
+import { Building2, DollarSign, FileText, Leaf, ShieldAlert, Sparkles, ArrowLeft, Star, Share2 } from "lucide-react";
 import Link from "next/link";
+import { useWatchlist } from "@/components/layout/watchlist-context";
 import { LobbyNetwork } from "@/components/charts/LobbyNetwork";
 
 interface Grant { program: string; department: string; agreement_value: number; agreement_start_date: string; description_en: string }
@@ -24,6 +25,8 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
   const [aiLoading, setAiLoading] = useState(false);
   const [graphData, setGraphData] = useState<{nodes: any[]; links: any[]} | null>(null);
   const [loading, setLoading] = useState(true);
+  const { add, remove, isWatched } = useWatchlist();
+  const watched = isWatched(decodedName);
 
   useEffect(() => {
     fetchAPI<DetailData>(`/recipients/detail/${encodeURIComponent(decodedName)}`)
@@ -52,9 +55,26 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
     <AppShell>
       <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6">
         {/* Back link */}
-        <Link href="/recipients" className="inline-flex items-center gap-1 text-xs text-emerald-500/60 hover:text-emerald-400 transition-colors">
-          <ArrowLeft className="h-3 w-3" /> Back to Recipients
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link href="/recipients" className="inline-flex items-center gap-1 text-xs text-emerald-500/60 hover:text-emerald-400 transition-colors">
+            <ArrowLeft className="h-3 w-3" /> Back to Recipients
+          </Link>
+          <div className="flex gap-2">
+            <button
+              onClick={() => watched ? remove(decodedName) : add(decodedName, p?.entity_name || decodedName)}
+              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${watched ? "bg-amber-500/15 text-amber-300 border border-amber-500/30" : "bg-emerald-950/30 text-emerald-500/60 border border-emerald-800/30 hover:text-amber-400"}`}
+            >
+              <Star className={`h-3 w-3 ${watched ? "fill-amber-400" : ""}`} />
+              {watched ? "Watching" : "Watch"}
+            </button>
+            <button
+              onClick={() => { navigator.clipboard.writeText(window.location.href); }}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-950/30 text-emerald-500/60 border border-emerald-800/30 hover:text-emerald-400 transition-all"
+            >
+              <Share2 className="h-3 w-3" /> Share
+            </button>
+          </div>
+        </div>
 
         {loading ? (
           <div className="space-y-4">

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Leaf, ArrowRightLeft, ShieldAlert, MapPin, Search,
-  Users, ChevronLeft, ChevronRight, TreePine, BookOpen, Info, Network, Menu, X,
+  Users, ChevronLeft, ChevronRight, TreePine, BookOpen, Info, Network, Menu, X, Scale, Eye, Layers,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 
@@ -17,7 +17,10 @@ const navMain = [
   { href: "/network", label: "Network Graph", icon: Network },
   { href: "/greenwash", label: "Greenwash Radar", icon: ShieldAlert },
   { href: "/gaps", label: "Funding Gaps", icon: MapPin },
+  { href: "/programs", label: "Climate Programs", icon: Layers },
   { href: "/search", label: "Search", icon: Search },
+  { href: "/compare", label: "Compare Orgs", icon: Scale },
+  { href: "/watchlist", label: "Watchlist", icon: Eye },
 ];
 
 const navSecondary = [
