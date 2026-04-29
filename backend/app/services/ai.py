@@ -96,6 +96,30 @@ National rank by funding: {data.get('rank', 'N/A')}
 
 Comment on whether this province appears well-served by climate funding relative to its needs.""",
 
+        "amendment_creep": f"""Analyze this amendment creep pattern in Canadian climate contracts:
+
+Organization: {data.get('vendor_name', 'Unknown')}
+Department: {data.get('department', 'Unknown')}
+Original contract value: ${data.get('original_value', 0):,.0f}
+Final contract value: ${data.get('contract_value', 0):,.0f}
+Growth via amendments: {data.get('growth_pct', 0):.0f}%
+Sole-source: {data.get('is_sole_source', False)}
+Total amended contracts: {data.get('amendment_count', 0)}
+Total growth across amendments: ${data.get('total_growth', 0):,.0f}
+
+Explain what amendment creep means, why this is flagged, and what legitimate reasons might exist.""",
+
+        "revolving_door": f"""Analyze this 'revolving door' pattern in Canadian climate contracts:
+
+Organization: {data.get('vendor_name', 'Unknown')}
+Department: {data.get('department', 'Unknown')}
+Contract value: ${data.get('contract_value', 0):,.0f}
+Total former-PS contracts: {data.get('total_fps_contracts', 0)}
+Total value: ${data.get('total_fps_value', 0):,.0f}
+Sole-source: {data.get('is_sole_source', False)}
+
+Explain the revolving door concern, why this is flagged, and note that post-employment rules exist in Canada.""",
+
         "general": f"""Analyze this climate spending data point:
 
 {json.dumps(data, indent=2, default=str)}
@@ -155,6 +179,24 @@ def _fallback_explanation(pattern_type: str, data: dict) -> str:
         text = f"**{name}** has received ${tv:,.0f} in climate-related public funding."
         if dual:
             text += " Notably, they receive both grants and contracts from climate departments — a dual relationship that may reflect deep sector engagement, but also warrants review for potential over-concentration."
+        return text
+
+    elif pattern_type == "amendment_creep":
+        name = data.get("vendor_name") or name
+        ov = data.get("original_value", 0)
+        fv = data.get("contract_value", 0)
+        gp = data.get("growth_pct", 0)
+        text = f"**{name}** had a contract originally valued at ${ov:,.0f} that grew to ${fv:,.0f} through amendments — a {gp:.0f}% increase."
+        if data.get("is_sole_source"):
+            text += " This was a sole-source contract, meaning the growth occurred without competitive re-evaluation."
+        text += " Amendment creep can indicate scope changes, poor initial estimation, or deliberate structuring to avoid procurement thresholds. Each case deserves individual review."
+        return text
+
+    elif pattern_type == "revolving_door":
+        name = data.get("vendor_name") or name
+        cv = data.get("contract_value", 0)
+        text = f"**{name}** received ${cv:,.0f} in climate contracts flagged as involving a former public servant."
+        text += " Canada's Values and Ethics Code and post-employment provisions restrict former officials from certain activities. The presence of this flag doesn't indicate wrongdoing — it's a transparency measure — but it signals a relationship worth reviewing."
         return text
 
     return f"Pattern detected for {name}. Review the underlying data for context."

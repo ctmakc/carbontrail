@@ -6,7 +6,7 @@ Climate spending intelligence for Canadian public funding
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import dashboard, money_flow, lobby_loops, greenwash, gaps, recipients, search, ai, graph, programs, chat, anomalies, departments, explorer, insights, stories
+from .routers import dashboard, money_flow, lobby_loops, greenwash, gaps, recipients, search, ai, graph, programs, chat, anomalies, departments, explorer, insights, stories, revolving_door, amendments, charities, compare, export
 
 app = FastAPI(
     title="CarbonTrail API",
@@ -38,6 +38,11 @@ app.include_router(departments.router)
 app.include_router(explorer.router)
 app.include_router(insights.router)
 app.include_router(stories.router)
+app.include_router(revolving_door.router)
+app.include_router(amendments.router)
+app.include_router(charities.router)
+app.include_router(compare.router)
+app.include_router(export.router)
 
 
 @app.get("/api/health")

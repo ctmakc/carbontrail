@@ -111,6 +111,8 @@ def ingest_contracts(con):
             solicitation_procedure,
             limited_tendering_reason,
             indigenous_business,
+            CASE WHEN LOWER(COALESCE(former_public_servant, '')) IN ('yes', 'y', 'true', '1')
+                THEN true ELSE false END as former_public_servant,
             CAST(instrument_type AS VARCHAR) as instrument_type,
             TRY_CAST(number_of_bids AS INTEGER) as number_of_bids,
             reporting_period,
@@ -580,6 +582,84 @@ def build_analytics(con):
     count = con.execute("SELECT count(*) FROM greenwash_signals").fetchone()[0]
     log(f"  greenwash_signals: {count:,}")
 
+    # ── AMENDMENT CREEP: contracts that grew significantly through amendments ──
+    con.execute("DROP TABLE IF EXISTS amendment_creep")
+    con.execute("""
+        CREATE TABLE amendment_creep AS
+        SELECT
+            vendor_name,
+            vendor_name_norm,
+            owner_org_title,
+            reference_number,
+            description_en,
+            original_value,
+            amendment_value,
+            contract_value,
+            contract_year,
+            is_sole_source,
+            CASE WHEN original_value > 0
+                THEN (contract_value - original_value) / original_value * 100
+                ELSE NULL END as growth_pct,
+            contract_value - COALESCE(original_value, 0) as absolute_growth,
+            'amendment_creep' as signal_type
+        FROM contracts
+        WHERE is_climate_relevant
+            AND original_value > 0
+            AND contract_value > original_value * 1.5
+            AND contract_value > 100000
+        ORDER BY absolute_growth DESC
+    """)
+    count = con.execute("SELECT count(*) FROM amendment_creep").fetchone()[0]
+    log(f"  amendment_creep: {count:,}")
+
+    # ── FORMER PUBLIC SERVANT contracts ──
+    con.execute("DROP TABLE IF EXISTS former_ps_contracts")
+    con.execute("""
+        CREATE TABLE former_ps_contracts AS
+        SELECT
+            vendor_name,
+            vendor_name_norm,
+            owner_org_title,
+            reference_number,
+            description_en,
+            contract_value,
+            contract_year,
+            is_sole_source,
+            solicitation_procedure
+        FROM contracts
+        WHERE is_climate_relevant
+            AND former_public_servant = true
+            AND contract_value > 0
+        ORDER BY contract_value DESC
+    """)
+    count = con.execute("SELECT count(*) FROM former_ps_contracts").fetchone()[0]
+    log(f"  former_ps_contracts: {count:,}")
+
+    # ── CHARITY-GRANT CROSS-REFERENCE ──
+    con.execute("DROP TABLE IF EXISTS charity_grant_links")
+    con.execute("""
+        CREATE TABLE charity_grant_links AS
+        SELECT
+            c.bn,
+            c.legal_name as charity_name,
+            c.legal_name_norm as charity_name_norm,
+            c.category as charity_category,
+            c.city as charity_city,
+            c.province as charity_province,
+            g.ref_number as grant_ref,
+            g.prog_name_en as grant_program,
+            g.agreement_value as grant_value,
+            g.owner_org_title as grant_department,
+            g.grant_year,
+            g.description_en as grant_description
+        FROM charities c
+        JOIN grants g ON c.bn = g.recipient_bn
+        WHERE g.is_climate_relevant AND g.agreement_value > 0
+        ORDER BY g.agreement_value DESC
+    """)
+    count = con.execute("SELECT count(*) FROM charity_grant_links").fetchone()[0]
+    log(f"  charity_grant_links: {count:,}")
+
     # ── PROVINCIAL CLIMATE FUNDING GAP ──
     con.execute("DROP TABLE IF EXISTS provincial_climate_gaps")
     con.execute("""
@@ -647,6 +727,10 @@ def build_indexes(con):
         "CREATE INDEX IF NOT EXISTS idx_lfl_org ON lobby_funding_loops(org_name_norm)",
         "CREATE INDEX IF NOT EXISTS idx_char_bn ON charities(bn)",
         "CREATE INDEX IF NOT EXISTS idx_dir_bn ON charity_directors(bn)",
+        "CREATE INDEX IF NOT EXISTS idx_ac_vendor ON amendment_creep(vendor_name_norm)",
+        "CREATE INDEX IF NOT EXISTS idx_fps_vendor ON former_ps_contracts(vendor_name_norm)",
+        "CREATE INDEX IF NOT EXISTS idx_cgl_bn ON charity_grant_links(bn)",
+        "CREATE INDEX IF NOT EXISTS idx_cgl_charity ON charity_grant_links(charity_name_norm)",
     ]
     for idx in indexes:
         con.execute(idx)
@@ -690,6 +774,12 @@ def print_summary(con):
     log(f"  Lobby-funding loops:{r[0]:>10,}")
     r = con.execute("SELECT count(*) FROM green_recipients WHERE dual_recipient").fetchone()
     log(f"  Dual recipients:    {r[0]:>10,}")
+    r = con.execute("SELECT count(*) FROM amendment_creep").fetchone()
+    log(f"  Amendment creep:    {r[0]:>10,}")
+    r = con.execute("SELECT count(*) FROM former_ps_contracts").fetchone()
+    log(f"  Former pub servant: {r[0]:>10,}")
+    r = con.execute("SELECT count(*) FROM charity_grant_links").fetchone()
+    log(f"  Charity-grant links:{r[0]:>10,}")
 
 
 # ─── MAIN ─────────────────────────────────────────────────────────

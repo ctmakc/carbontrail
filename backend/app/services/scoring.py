@@ -14,6 +14,8 @@ def compute_entity_score(entity_name_norm: str) -> dict:
         "lobby_intensity": 0,         # Lobby registrations per $ received
         "dual_recipient": 0,          # Gets both grants AND contracts
         "multi_department": 0,        # Funded by multiple depts
+        "amendment_creep": 0,         # Contract growth via amendments
+        "revolving_door": 0,          # Former public servant flag
         "overall": 0,
     }
     details = {}
@@ -66,6 +68,26 @@ def compute_entity_score(entity_name_norm: str) -> dict:
     elif gp >= 1:
         scores["multi_department"] = 5
     details["multi_department"] = f"{gp} different climate programs"
+
+    # 6. Amendment creep (0-10)
+    amend = query("""
+        SELECT COUNT(*) as c, SUM(absolute_growth) as growth, MAX(growth_pct) as max_pct
+        FROM amendment_creep WHERE vendor_name_norm = ?
+    """, [entity_name_norm])
+    if amend and amend[0]["c"] > 0:
+        ac = amend[0]["c"]
+        scores["amendment_creep"] = min(10, ac * 2)
+        details["amendment_creep"] = f"{ac} amended contracts, max growth {amend[0]['max_pct']:.0f}%"
+    else:
+        details["amendment_creep"] = "No amendment creep detected"
+
+    # 7. Revolving door (0-10)
+    fps = query("SELECT COUNT(*) as c, SUM(contract_value) as v FROM former_ps_contracts WHERE vendor_name_norm = ?", [entity_name_norm])
+    if fps and fps[0]["c"] > 0:
+        scores["revolving_door"] = min(10, fps[0]["c"] * 5)
+        details["revolving_door"] = f"{fps[0]['c']} contracts flagged as former public servant (${fps[0]['v']:,.0f})"
+    else:
+        details["revolving_door"] = "No revolving door flags"
 
     # Overall
     scores["overall"] = sum(v for k, v in scores.items() if k != "overall")
