@@ -4,6 +4,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, TrendingUp } from "lucide-react";
+import { CanadaMap } from "@/components/charts/CanadaMap";
 
 interface ProvGap { province: string; total_grants: number; total_value: number; recipient_count: number; program_count: number }
 interface YoY { year: number; total_value: number; record_count: number; recipient_count: number }
@@ -30,6 +31,21 @@ export default function GapsPage() {
         <div className="rounded-xl border border-emerald-600/20 bg-emerald-950/40 p-4">
           <p className="text-xs text-emerald-400/70">🌍 <span className="font-semibold text-emerald-300">Why gaps matter:</span> Uneven climate funding distribution can leave vulnerable regions behind. Northern communities, Indigenous territories, and agricultural provinces all face unique climate challenges — are they getting proportional support?</p>
         </div>
+
+
+        {/* Canada Map */}
+        {gaps.length > 0 && (
+          <Card className="border-emerald-900/30 bg-[#0a1210]">
+            <CardHeader>
+              <CardTitle className="text-base text-emerald-50 flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-sky-400" /> Climate Funding Across Canada
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CanadaMap data={gaps.map(g => ({ ...g, grant_count: g.total_grants }))} />
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-6">
           <Card className="border-emerald-900/30 bg-[#0a1210]">

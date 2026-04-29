@@ -1,104 +1,130 @@
 # 🌍 CarbonTrail — Follow the Green Money
 
 > Climate spending intelligence for Canadian public funding.
-> Where do billions in green money go? Who lobbies for it? What patterns emerge?
+> Track where $321B+ in green money goes, who lobbies for it, and what patterns emerge.
+
+[![GitHub](https://img.shields.io/badge/GitHub-ctmakc%2Fcarbontrail-emerald?style=flat&logo=github)](https://github.com/ctmakc/carbontrail)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat&logo=python)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat&logo=next.js)
+![DuckDB](https://img.shields.io/badge/DuckDB-OLAP-FFC107?style=flat)
 
 ## Why This Exists
 
-Canada spends **$320B+** through climate-related departments (ECCC, NRCan, Transport, Infrastructure, Agriculture, Fisheries). **70,000+ lobbying registrations** target these same departments. **Nobody connects the dots.**
+Canada spends **$321B+** through climate-related departments. **70,000+ lobbying registrations** target these departments. **Nobody connects the dots.**
 
-CarbonTrail is a public-interest analytics platform that cross-references procurement, grants, and lobbying data to make climate spending transparent and accountable.
+CarbonTrail cross-references procurement, grants, and lobbying data to make climate spending transparent. **We are pro-climate** — transparent spending builds public trust. Public trust protects climate budgets.
 
-**We are pro-climate.** Transparent spending builds public trust. Public trust protects climate budgets. Accountability is the best defence against rollbacks.
+## Features
 
-## What It Does
+### 📊 Analytics
+| Feature | Description |
+|---------|-------------|
+| **Dashboard** | Live stats, top signals, spending timeline (Recharts) |
+| **Green Money Flow** | Sankey diagram: Department → Program → Recipient |
+| **Anomaly Detection** | Spending spikes, sole-source concentration, new vendor signals |
+| **Funding Gaps** | Interactive Canada map, provincial equity analysis |
 
-| Module | Function | Key Insight |
-|--------|----------|-------------|
-| **Green Money Flow** | Track climate $ by program, province, year | Where billions actually land |
-| **Top Recipients** | Who gets the most climate funding | Concentration and dual-sourcing |
-| **Lobby ↔ Funding Loops** | Orgs that lobby AND receive climate $ | 2,262 loops detected |
-| **Greenwash Radar** | Anomalous lobbying patterns | Energy+Tax nexus, broad spectrum |
-| **Funding Gaps** | Where climate money ISN'T reaching | Geographic equity analysis |
-| **Search** | Find any organization | Full-text across 84K+ entities |
+### 🕵️ Investigation
+| Feature | Description |
+|---------|-------------|
+| **Lobby ↔ Funding Loops** | Orgs that lobby AND receive climate $ (2,262 detected) |
+| **Greenwash Radar** | Energy-tax nexus, broad spectrum lobbying patterns |
+| **Network Graph** | Force-directed visualization of org ↔ department connections |
+| **Entity Profiles** | Full dossier: grants, contracts, lobbying, timeline, AI analysis |
+| **Compare** | Side-by-side organization comparison |
 
-## Data
+### 🤖 Intelligence
+| Feature | Description |
+|---------|-------------|
+| **AI Chat** | Conversational data exploration (Bedrock/Claude + fallback) |
+| **AI Explanations** | One-click pattern analysis on every entity |
+| **Climate Programs** | Deep-dive into 100+ individual programs with charts |
 
-| Source | Records | Description |
-|--------|---------|-------------|
+### 🛠️ Power Features
+| Feature | Description |
+|---------|-------------|
+| **⌘K Command Palette** | Instant search across entities + page navigation |
+| **Watchlist** | Track organizations (localStorage) |
+| **CSV Export** | Download any table as CSV |
+| **Print Reports** | Print-friendly entity profiles |
+| **Keyboard Shortcuts** | Press `?` for shortcut panel |
+| **Responsive** | Mobile hamburger menu, auto-collapse sidebar |
+| **Toast Notifications** | Feedback on watchlist, export, share actions |
+
+## Data Sources
+
+| Source | Records | Coverage |
+|--------|---------|----------|
 | PSPC Contracts | 1,261,485 | Federal procurement (258K climate-relevant) |
 | Federal Grants | 1,276,108 | Grants & contributions (113K climate-relevant) |
 | Lobbyist Registry | 127,415 | All registrations (70K target climate depts) |
-| Lobbyist Subjects | 996,271 | Subject matter codes (environment, energy, resources) |
+| Lobbyist Subjects | 996,271 | Subject matter codes |
 | T3010 Charities | 83,581 | Registered charities |
-| Charity Directors | 568,144 | Board members for network analysis |
+| Charity Directors | 568,144 | Board members |
 
-**Total: 5.2M+ records analyzed, 746 MB DuckDB database**
+**Total: 5.2M+ records analyzed, 747 MB DuckDB database**
 
 ## Tech Stack
 
-- **Frontend:** Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui
-- **Backend:** Python FastAPI + DuckDB (embedded OLAP)
-- **AI:** AWS Bedrock / Claude (planned: pattern explanations)
-- **Data:** 6 Canadian open data sources, filtered for climate relevance
+```
+Frontend:  Next.js 16 · TypeScript · Tailwind CSS · shadcn/ui · Recharts · d3-sankey · react-force-graph-2d
+Backend:   Python FastAPI · DuckDB (embedded OLAP)
+AI:        AWS Bedrock / Claude (with rule-based fallback)
+Data:      Canadian Open Data (Open Government Licence)
+```
 
 ## Quick Start
 
 ```bash
-# 1. Run ETL (one-time — ingests CSV → DuckDB, ~67 seconds)
-cd backend && source /path/to/venv/bin/activate && python etl/ingest.py
+# 1. Clone
+git clone https://github.com/ctmakc/carbontrail
+cd carbontrail
 
-# 2. Install frontend deps
-cd frontend && npm install
+# 2. ETL (one-time — downloads nothing, uses local CSVs)
+cd backend
+pip install -r requirements.txt
+python etl/ingest.py     # ~67 seconds, creates 747MB DuckDB
 
-# 3. Start everything
-./start.sh
+# 3. Backend
+uvicorn app.main:app --port 8902
 
-# Opens:
-#   Frontend:  http://localhost:3100
-#   Backend:   http://localhost:8902
-#   API Docs:  http://localhost:8902/docs
+# 4. Frontend (new terminal)
+cd frontend
+npm install
+npm run dev              # http://localhost:3000
 ```
 
-## AWS Architecture (Target)
+## Architecture
 
 ```
-┌────────────────────────┐
-│  Next.js 16 (Amplify)  │
-│  Green-themed dashboard │
-└──────────┬─────────────┘
-           │
-┌──────────▼─────────────┐
-│  FastAPI (ECS/Fargate)  │
-│  7 route modules        │
-└──────────┬─────────────┘
-           │
-┌──────────▼─────────────┐     ┌──────────────────┐
-│  RDS PostgreSQL / DuckDB│     │  S3 Data Lake     │
-│  746 MB, 19 tables      │     │  Raw CSVs (8.8GB) │
-└─────────────────────────┘     └──────────────────┘
-           │
-┌──────────▼─────────────┐
-│  AWS Bedrock (Claude)   │
-│  Pattern explanations   │
-│  Anomaly narratives     │
-└─────────────────────────┘
+┌────────────────────┐     ┌───────────────────────┐
+│  Next.js 16 (18pg) │────▶│   FastAPI (35 endpts)  │
+│  Tailwind + shadcn  │     │   13 routers           │
+│  Recharts · d3      │     │   AI service (Bedrock) │
+│  react-force-graph  │     └───────────┬────────────┘
+└────────────────────┘                  │
+                               ┌────────▼────────┐
+                               │  DuckDB (747MB)  │
+                               │  17 tables       │
+                               │  5.2M records    │
+                               └─────────────────┘
 ```
 
-**Estimated AWS costs at scale: $800-2,000/month**
-- RDS: $200/mo (db.t3.large)
-- ECS: $150/mo (2 tasks)
-- S3: $20/mo (data lake)
-- Bedrock: $200-1,000/mo (AI analysis)
-- CloudFront: $50/mo
+## Key Findings
+
+- **$321B+** tracked in climate-related spending
+- **2,262** lobby-to-funding loops detected
+- **3,559** dual recipients (grants + contracts from same depts)
+- **$8.6B** in 100% sole-source contracts (Chantier Davie)
+- **5,585** greenwash signals
+- **NextStar Energy**: $14.5B grant + 6 lobbying registrations
 
 ## Principles
 
-- 🌱 **Pro-climate stance** — we exist to make green spending *more effective*
-- 🔍 **Review signals, not allegations** — patterns deserve investigation, not condemnation
-- 📎 **Source-linked** — every finding traces to public records
-- ⚖️ **Careful language** — "pattern", "signal", "requires verification"
-- 🌍 **Open data, open analysis** — public money, public accountability
+🌱 **Pro-climate** — transparency protects green budgets
+🔍 **Review signals, not allegations** — careful language always
+📎 **Source-linked** — every finding traces to public records
+⚖️ **Responsible** — "pattern", "signal", "requires verification"
 
 ## License
 
@@ -106,4 +132,4 @@ MIT
 
 ---
 
-*Built with conviction that climate action works better in the light.*
+*Built with conviction that climate action works better in the light.* 🌍

@@ -79,3 +79,36 @@ def recipient_detail(entity_name_norm: str):
         "contracts": contracts,
         "lobbying": lobby[0] if lobby else None,
     }
+
+
+@router.get("/timeline/{entity_name_norm}")
+def recipient_timeline(entity_name_norm: str, limit: int = Query(50)):
+    """Chronological timeline of all climate events for an entity"""
+    events = []
+
+    # Grants
+    grants = query("""
+        SELECT 'grant' as event_type, prog_name_en as title,
+               owner_org_title as department, agreement_value as value,
+               agreement_start_date as event_date, description_en as description
+        FROM grants WHERE is_climate_relevant AND recipient_name_norm = ?
+        AND agreement_start_date IS NOT NULL
+        ORDER BY agreement_start_date DESC LIMIT ?
+    """, [entity_name_norm, limit])
+    events.extend(grants)
+
+    # Contracts
+    contracts = query("""
+        SELECT 'contract' as event_type, description_en as title,
+               owner_org_title as department, contract_value as value,
+               contract_date as event_date,
+               CASE WHEN is_sole_source THEN 'Sole-source' ELSE 'Competitive' END as description
+        FROM contracts WHERE is_climate_relevant AND vendor_name_norm = ?
+        AND contract_date IS NOT NULL
+        ORDER BY contract_date DESC LIMIT ?
+    """, [entity_name_norm, limit])
+    events.extend(contracts)
+
+    # Sort all events by date
+    events.sort(key=lambda e: e.get("event_date") or "", reverse=True)
+    return events[:limit]

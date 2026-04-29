@@ -1,4 +1,5 @@
 "use client";
+import { useToast } from "./toast-provider";
 
 import { Download } from "lucide-react";
 
@@ -9,6 +10,7 @@ interface ExportButtonProps {
 }
 
 export function ExportCSV({ data, filename }: ExportButtonProps) {
+  const { toast } = useToast();
   const download = () => {
     if (!data.length) return;
     const headers = Object.keys(data[0]);
@@ -28,6 +30,7 @@ export function ExportCSV({ data, filename }: ExportButtonProps) {
     a.download = `${filename}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    toast(`Exported ${data.length} rows to ${filename}.csv`);
   };
 
   return (

@@ -6,10 +6,12 @@ import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, DollarSign, FileText, Leaf, ShieldAlert, Sparkles, ArrowLeft, Star, Share2 } from "lucide-react";
+import { Building2, DollarSign, FileText, Leaf, ShieldAlert, Sparkles, ArrowLeft, Star, Share2, Printer } from "lucide-react";
 import Link from "next/link";
 import { useWatchlist } from "@/components/layout/watchlist-context";
+import { useToast } from "@/components/ui/toast-provider";
 import { LobbyNetwork } from "@/components/charts/LobbyNetwork";
+import { EntityTimeline } from "@/components/charts/EntityTimeline";
 
 interface Grant { program: string; department: string; agreement_value: number; agreement_start_date: string; description_en: string }
 interface Contract { description_en: string; department: string; contract_value: number; contract_date: string; is_sole_source: boolean; number_of_bids: number }
@@ -24,8 +26,10 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
   const [aiExplanation, setAiExplanation] = useState<string>("");
   const [aiLoading, setAiLoading] = useState(false);
   const [graphData, setGraphData] = useState<{nodes: any[]; links: any[]} | null>(null);
+  const [timeline, setTimeline] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { add, remove, isWatched } = useWatchlist();
+  const { toast } = useToast();
   const watched = isWatched(decodedName);
 
   useEffect(() => {
@@ -35,6 +39,8 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
       .finally(() => setLoading(false));
     fetchAPI<{nodes: any[]; links: any[]}>(`/graph/entity-connections/${encodeURIComponent(decodedName)}`)
       .then(setGraphData).catch(() => {});
+    fetchAPI<any[]>(`/recipients/timeline/${encodeURIComponent(decodedName)}`, { limit: 30 })
+      .then(setTimeline).catch(() => {});
   }, [decodedName]);
 
   const requestAI = async () => {
@@ -61,17 +67,23 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
           </Link>
           <div className="flex gap-2">
             <button
-              onClick={() => watched ? remove(decodedName) : add(decodedName, p?.entity_name || decodedName)}
+              onClick={() => { if (watched) { remove(decodedName); toast("Removed from watchlist"); } else { add(decodedName, p?.entity_name || decodedName); toast("Added to watchlist ⭐"); } }}
               className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${watched ? "bg-amber-500/15 text-amber-300 border border-amber-500/30" : "bg-emerald-950/30 text-emerald-500/60 border border-emerald-800/30 hover:text-amber-400"}`}
             >
               <Star className={`h-3 w-3 ${watched ? "fill-amber-400" : ""}`} />
               {watched ? "Watching" : "Watch"}
             </button>
             <button
-              onClick={() => { navigator.clipboard.writeText(window.location.href); }}
+              onClick={() => { navigator.clipboard.writeText(window.location.href); toast("Link copied to clipboard"); }}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-950/30 text-emerald-500/60 border border-emerald-800/30 hover:text-emerald-400 transition-all"
             >
               <Share2 className="h-3 w-3" /> Share
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-950/30 text-emerald-500/60 border border-emerald-800/30 hover:text-emerald-400 transition-all"
+            >
+              <Printer className="h-3 w-3" /> Print
             </button>
           </div>
         </div>
@@ -198,6 +210,22 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
                 </CardContent>
               </Card>
             </div>
+
+            {/* Timeline */}
+            {timeline.length > 0 && (
+              <Card className="border-emerald-900/30 bg-[#0a1210]">
+                <CardHeader>
+                  <CardTitle className="text-base text-emerald-50 flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-emerald-400" /> Event Timeline ({timeline.length} events)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="max-h-[500px] overflow-y-auto">
+                    <EntityTimeline events={timeline} />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Connection Graph */}
             {graphData && graphData.nodes.length > 1 && (

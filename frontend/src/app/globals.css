@@ -156,3 +156,34 @@
 .glow-amber {
   box-shadow: 0 0 20px oklch(0.75 0.15 55 / 15%);
 }
+/* Print styles */
+@media print {
+  aside, .sticky, button, [data-slot="sidebar"] {
+    display: none !important;
+  }
+  main {
+    margin-left: 0 !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  * {
+    color: black !important;
+    border-color: #ddd !important;
+    background-color: transparent !important;
+  }
+  .text-emerald-300, .text-emerald-100, .text-emerald-50 {
+    color: #111 !important;
+  }
+  .text-emerald-400, .text-emerald-500, .text-amber-400, .text-red-400, .text-teal-300 {
+    color: #333 !important;
+  }
+  .font-mono {
+    color: #000 !important;
+    font-weight: bold !important;
+  }
+  h1, h2, h3 { color: #000 !important; }
+  .rounded-xl { border: 1px solid #ddd !important; padding: 8px !important; margin-bottom: 8px !important; }
+  @page { margin: 1.5cm; }
+}

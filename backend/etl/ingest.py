@@ -622,6 +622,14 @@ def build_analytics(con):
     count = con.execute("SELECT count(*) FROM climate_spending_timeline").fetchone()[0]
     log(f"  climate_spending_timeline: {count:,}")
 
+    # Fix null entity names — fill from normalized name
+    con.execute("""
+        UPDATE green_recipients
+        SET entity_name = entity_name_norm
+        WHERE entity_name IS NULL OR TRIM(entity_name) = ''
+    """)
+    log("  Fixed null entity names in green_recipients")
+
 
 # ─── 6. INDEXES ───────────────────────────────────────────────────
 def build_indexes(con):

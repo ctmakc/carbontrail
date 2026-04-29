@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider } from "@/components/layout/sidebar-context";
 import { WatchlistProvider } from "@/components/layout/watchlist-context";
+import { ToastProvider } from "@/components/ui/toast-provider";
+import { KeyboardShortcuts } from "@/components/layout/keyboard-shortcuts";
 
 const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -30,7 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SidebarProvider>
           <WatchlistProvider>
-            {children}
+            <ToastProvider>
+              {children}
+              <KeyboardShortcuts />
+            </ToastProvider>
           </WatchlistProvider>
         </SidebarProvider>
       </body>
