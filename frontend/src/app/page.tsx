@@ -43,6 +43,14 @@ interface Signal {
   loop_signal_score: number;
 }
 
+interface Insight {
+  type: string;
+  icon: string;
+  title: string;
+  detail: string;
+  entity_norm?: string;
+}
+
 interface TimelinePoint {
   year: number;
   contract_value: number;
@@ -55,16 +63,19 @@ export default function DashboardPage() {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [timeline, setTimeline] = useState<TimelinePoint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [insights, setInsights] = useState<Insight[]>([]);
 
   useEffect(() => {
     Promise.all([
       fetchAPI<Stats>("/dashboard/stats"),
       fetchAPI<Signal[]>("/dashboard/top-signals", { limit: 12 }),
       fetchAPI<TimelinePoint[]>("/dashboard/spending-timeline"),
-    ]).then(([s, sig, t]) => {
+      fetchAPI<Insight[]>("/insights/key-findings"),
+    ]).then(([s, sig, t, ins]) => {
       setStats(s);
       setSignals(sig);
       setTimeline(t);
+      setInsights(ins);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
@@ -99,6 +110,28 @@ export default function DashboardPage() {
             </p>
           </div>
         </div>
+
+
+        {/* Key Insights */}
+        {insights.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {insights.slice(0, 6).map((ins, i) => (
+              <a
+                key={i}
+                href={ins.entity_norm ? `/entity/${encodeURIComponent(ins.entity_norm)}` : "#"}
+                className="rounded-xl border border-emerald-900/20 bg-emerald-950/20 p-3 hover:bg-emerald-900/20 hover:border-emerald-700/30 transition-all group"
+              >
+                <div className="flex items-start gap-2">
+                  <span className="text-lg">{ins.icon}</span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-emerald-200 group-hover:text-emerald-100">{ins.title}</p>
+                    <p className="text-[10px] text-emerald-500/50 mt-0.5 line-clamp-2">{ins.detail}</p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
 
         {/* Stats Grid */}
         {loading ? (

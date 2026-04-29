@@ -6,6 +6,7 @@ import { WatchlistProvider } from "@/components/layout/watchlist-context";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import { KeyboardShortcuts } from "@/components/layout/keyboard-shortcuts";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { PageTransition } from "@/components/layout/page-transition";
 
 const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ErrorBoundary>
+        <PageTransition />
         <SidebarProvider>
           <WatchlistProvider>
             <ToastProvider>

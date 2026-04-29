@@ -6,7 +6,7 @@ import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, DollarSign, FileText, Leaf, ShieldAlert, Sparkles, ArrowLeft, Star, Share2, Printer } from "lucide-react";
+import { Building2, Users, DollarSign, FileText, Leaf, ShieldAlert, Sparkles, ArrowLeft, Star, Share2, Printer } from "lucide-react";
 import Link from "next/link";
 import { useWatchlist } from "@/components/layout/watchlist-context";
 import { useToast } from "@/components/ui/toast-provider";
@@ -27,6 +27,7 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
   const [aiLoading, setAiLoading] = useState(false);
   const [graphData, setGraphData] = useState<{nodes: any[]; links: any[]} | null>(null);
   const [timeline, setTimeline] = useState<any[]>([]);
+  const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { add, remove, isWatched } = useWatchlist();
   const { toast } = useToast();
@@ -41,6 +42,8 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
       .then(setGraphData).catch(() => {});
     fetchAPI<any[]>(`/recipients/timeline/${encodeURIComponent(decodedName)}`, { limit: 30 })
       .then(setTimeline).catch(() => {});
+    fetchAPI<any[]>(`/recipients/related/${encodeURIComponent(decodedName)}`, { limit: 6 })
+      .then(setRelated).catch(() => {});
   }, [decodedName]);
 
   const requestAI = async () => {
@@ -255,6 +258,29 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
                     <div><span className="text-emerald-500/50 text-xs">Loop Signal</span><p className="text-lg font-bold text-amber-300">{Math.round(data.lobbying.loop_signal_score)}/100</p></div>
                     <div><span className="text-emerald-500/50 text-xs">Total Climate $</span><p className="text-lg font-bold text-emerald-300">{formatCurrency(data.lobbying.total_climate_value)}</p></div>
                     <div><span className="text-emerald-500/50 text-xs">Govt Funded</span><p className="text-lg font-bold text-amber-300">{data.lobbying.receives_govt_funding ? "Yes" : "No"}</p></div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Related Entities */}
+            {related.length > 0 && (
+              <Card className="border-emerald-900/30 bg-[#0a1210]">
+                <CardHeader>
+                  <CardTitle className="text-base text-emerald-50 flex items-center gap-2">
+                    <Users className="h-4 w-4 text-emerald-400" /> Similar Organizations in {data?.profile?.province || "Province"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {related.map((r: any, i: number) => (
+                      <a key={i} href={`/entity/${encodeURIComponent(r.entity_name_norm)}`}
+                        className="rounded-lg border border-emerald-900/20 p-3 hover:bg-emerald-500/5 transition-colors">
+                        <p className="text-xs font-medium text-emerald-100 truncate">{r.entity_name}</p>
+                        <p className="text-[10px] text-emerald-500/40 mt-0.5">{formatCurrency(r.total_climate_value)}</p>
+                        {r.dual_recipient && <Badge variant="outline" className="text-[8px] text-amber-400 border-amber-500/30 mt-1">dual</Badge>}
+                      </a>
+                    ))}
                   </div>
                 </CardContent>
               </Card>

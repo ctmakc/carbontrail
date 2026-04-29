@@ -112,3 +112,29 @@ def recipient_timeline(entity_name_norm: str, limit: int = Query(50)):
     # Sort all events by date
     events.sort(key=lambda e: e.get("event_date") or "", reverse=True)
     return events[:limit]
+
+
+@router.get("/related/{entity_name_norm}")
+def related_entities(entity_name_norm: str, limit: int = Query(10)):
+    """Find related entities: same departments, shared programs, similar province"""
+    profile = query("SELECT * FROM green_recipients WHERE entity_name_norm = ?", [entity_name_norm])
+    if not profile:
+        return []
+
+    p = profile[0]
+    province = p.get("province")
+
+    # Entities in same province with similar funding pattern
+    related = query("""
+        SELECT entity_name, entity_name_norm, province,
+               grant_value, contract_value, total_climate_value, dual_recipient,
+               ABS(total_climate_value - ?) as value_diff
+        FROM green_recipients
+        WHERE entity_name_norm != ?
+            AND province = ?
+            AND total_climate_value > 0
+        ORDER BY value_diff ASC
+        LIMIT ?
+    """, [p.get("total_climate_value", 0), entity_name_norm, province, limit])
+
+    return related

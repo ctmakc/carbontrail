@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/command";
 import { fetchAPI, formatCurrency } from "@/lib/api";
 import {
-  Search, Building2, ArrowRightLeft, Leaf, ShieldAlert, MapPin,
+  Search, Building2, Building, ArrowRightLeft, Leaf, ShieldAlert, MapPin,
   LayoutDashboard, Users, Network, BookOpen, Info,
 } from "lucide-react";
 
@@ -34,6 +34,8 @@ const pages = [
   { href: "/network", label: "Network Graph", icon: Network, keywords: "visualization connections" },
   { href: "/greenwash", label: "Greenwash Radar", icon: ShieldAlert, keywords: "signals anomalies" },
   { href: "/gaps", label: "Funding Gaps", icon: MapPin, keywords: "provinces equity distribution" },
+  { href: "/departments", label: "Departments", icon: Building, keywords: "government ministry" },
+  { href: "/explorer", label: "Data Explorer", icon: Search, keywords: "query sql data" },
   { href: "/search", label: "Full Search", icon: Search, keywords: "find entities" },
   { href: "/methodology", label: "Methodology", icon: BookOpen, keywords: "scoring algorithms" },
   { href: "/about", label: "About & Disclaimers", icon: Info, keywords: "mission data sources" },
