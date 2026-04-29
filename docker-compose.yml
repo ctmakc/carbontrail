@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8902:8902"
+    volumes:
+      - ./backend/data:/app/data
+      - /data/opendata/canada:/data/opendata/canada:ro
+    environment:
+      - CARBONTRAIL_DB=/app/data/carbontrail.duckdb
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - BEDROCK_MODEL_ID=${BEDROCK_MODEL_ID:-anthropic.claude-sonnet-4-20250514}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8902/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3100:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8902
+    depends_on:
+      backend:
+        condition: service_healthy

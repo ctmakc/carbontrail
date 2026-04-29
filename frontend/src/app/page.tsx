@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SpendingTimeline } from "@/components/charts/SpendingTimeline";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -275,36 +276,7 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                {timeline.map((t) => (
-                  <div key={t.year} className="flex items-center gap-3">
-                    <span className="text-xs font-mono text-emerald-500/60 w-10">{t.year}</span>
-                    <div className="flex-1 flex items-center gap-1">
-                      <div
-                        className="h-5 rounded bg-emerald-500/40 transition-all"
-                        style={{
-                          width: `${Math.min(100, (t.grant_value / Math.max(...timeline.map(x => x.total_value))) * 100)}%`,
-                        }}
-                        title={`Grants: ${formatCurrency(t.grant_value)}`}
-                      />
-                      <div
-                        className="h-5 rounded bg-teal-400/30 transition-all"
-                        style={{
-                          width: `${Math.min(100, (t.contract_value / Math.max(...timeline.map(x => x.total_value))) * 100)}%`,
-                        }}
-                        title={`Contracts: ${formatCurrency(t.contract_value)}`}
-                      />
-                    </div>
-                    <span className="text-xs font-mono text-emerald-300/60 w-24 text-right">
-                      {formatCurrency(t.total_value)}
-                    </span>
-                  </div>
-                ))}
-                <div className="flex items-center gap-4 mt-3 text-[10px] text-emerald-500/50">
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-500/40" /> Grants</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-teal-400/30" /> Contracts</span>
-                </div>
-              </div>
+              <SpendingTimeline data={timeline} />
             </CardContent>
           </Card>
         )}
