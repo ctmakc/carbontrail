@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Leaf, ArrowRightLeft, ShieldAlert, MapPin, Search,
   Users, ChevronLeft, ChevronRight, TreePine, BookOpen, Info, Network,
   Menu, X, Scale, Eye, Layers, MessageCircle, AlertTriangle, Building,
-  Database,
+  Database, BookMarked, Upload,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 
@@ -27,6 +27,7 @@ const sections = [
       { href: "/greenwash", label: "Greenwash Radar", icon: ShieldAlert },
       { href: "/anomalies", label: "Anomalies", icon: AlertTriangle },
       { href: "/network", label: "Network Graph", icon: Network },
+      { href: "/stories", label: "Data Stories", icon: BookMarked },
     ],
   },
   {
@@ -44,6 +45,7 @@ const sections = [
       { href: "/explorer", label: "Data Explorer", icon: Database },
       { href: "/compare", label: "Compare", icon: Scale },
       { href: "/watchlist", label: "Watchlist", icon: Eye },
+      { href: "/bulk", label: "Bulk Lookup", icon: Upload },
       { href: "/chat", label: "AI Chat", icon: MessageCircle },
     ],
   },

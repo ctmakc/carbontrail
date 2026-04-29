@@ -7,6 +7,7 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 import { KeyboardShortcuts } from "@/components/layout/keyboard-shortcuts";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { PageTransition } from "@/components/layout/page-transition";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ToastProvider>
               {children}
               <KeyboardShortcuts />
+              <ScrollToTop />
             </ToastProvider>
           </WatchlistProvider>
         </SidebarProvider>
