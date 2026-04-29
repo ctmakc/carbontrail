@@ -138,3 +138,10 @@ def related_entities(entity_name_norm: str, limit: int = Query(10)):
     """, [p.get("total_climate_value", 0), entity_name_norm, province, limit])
 
     return related
+
+
+@router.get("/score/{entity_name_norm}")
+def entity_score(entity_name_norm: str):
+    """Compute composite climate accountability score"""
+    from ..services.scoring import compute_entity_score
+    return compute_entity_score(entity_name_norm)

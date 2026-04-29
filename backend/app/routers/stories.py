@@ -1,6 +1,6 @@
 """Stories — pre-built investigative narratives from real data"""
 from fastapi import APIRouter
-from ..db import query
+from ..cache import cached_query as query  # cached
 
 router = APIRouter(prefix="/api/stories", tags=["stories"])
 

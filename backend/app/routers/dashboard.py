@@ -1,6 +1,6 @@
 """Dashboard — overview stats and top signals"""
 from fastapi import APIRouter, Query
-from ..db import query
+from ..cache import cached_query as query  # cached for performance
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 

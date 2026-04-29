@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Leaf, ArrowRightLeft, ShieldAlert, MapPin, Search,
   Users, ChevronLeft, ChevronRight, TreePine, BookOpen, Info, Network,
   Menu, X, Scale, Eye, Layers, MessageCircle, AlertTriangle, Building,
-  Database, BookMarked, Upload,
+  Database, BookMarked, Upload, History,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 
@@ -54,6 +54,7 @@ const sections = [
     items: [
       { href: "/methodology", label: "Methodology", icon: BookOpen },
       { href: "/about", label: "About", icon: Info },
+      { href: "/changelog", label: "Changelog", icon: History },
     ],
   },
 ];

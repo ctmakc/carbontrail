@@ -3,6 +3,7 @@
 import { CommandSearch } from "./command-search";
 import { usePathname } from "next/navigation";
 import { Database, Clock } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 const routeNames: Record<string, string> = {
   "/": "Dashboard",
@@ -28,6 +29,7 @@ export function TopBar() {
       </div>
       <div className="flex items-center gap-3">
         <CommandSearch />
+        <ThemeToggle />
         <div className="hidden lg:flex items-center gap-1.5 text-[10px] text-emerald-700">
           <Database className="h-3 w-3" />
           <span>5.2M records</span>

@@ -1,6 +1,6 @@
 """Auto-generated insights from the data — key findings for the dashboard"""
 from fastapi import APIRouter
-from ..db import query
+from ..cache import cached_query as query  # cached
 
 router = APIRouter(prefix="/api/insights", tags=["insights"])
 

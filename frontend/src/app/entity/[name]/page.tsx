@@ -28,6 +28,7 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
   const [graphData, setGraphData] = useState<{nodes: any[]; links: any[]} | null>(null);
   const [timeline, setTimeline] = useState<any[]>([]);
   const [related, setRelated] = useState<any[]>([]);
+  const [score, setScore] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { add, remove, isWatched } = useWatchlist();
   const { toast } = useToast();
@@ -44,6 +45,8 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
       .then(setTimeline).catch(() => {});
     fetchAPI<any[]>(`/recipients/related/${encodeURIComponent(decodedName)}`, { limit: 6 })
       .then(setRelated).catch(() => {});
+    fetchAPI<any>(`/recipients/score/${encodeURIComponent(decodedName)}`)
+      .then(setScore).catch(() => {});
   }, [decodedName]);
 
   const requestAI = async () => {

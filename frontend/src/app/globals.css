@@ -187,3 +187,66 @@
   .rounded-xl { border: 1px solid #ddd !important; padding: 8px !important; margin-bottom: 8px !important; }
   @page { margin: 1.5cm; }
 }
+
+/* Light mode overrides */
+:root:not(.dark) {
+  --background: #f8faf9;
+  --foreground: #1a2e25;
+}
+
+:root:not(.dark) body {
+  background: #f8faf9 !important;
+  color: #1a2e25;
+}
+
+:root:not(.dark) .bg-\[#080f0d\],
+:root:not(.dark) .bg-\[#0a1210\],
+:root:not(.dark) .bg-\[#060d0b\] {
+  background: #ffffff !important;
+}
+
+:root:not(.dark) .border-emerald-900\/30,
+:root:not(.dark) .border-emerald-900\/20,
+:root:not(.dark) .border-emerald-900\/10,
+:root:not(.dark) .border-emerald-800\/30,
+:root:not(.dark) .border-emerald-800\/40 {
+  border-color: #d1fae5 !important;
+}
+
+:root:not(.dark) .text-emerald-50,
+:root:not(.dark) .text-emerald-100 {
+  color: #064e3b !important;
+}
+
+:root:not(.dark) .text-emerald-300 {
+  color: #059669 !important;
+}
+
+:root:not(.dark) .text-emerald-400 {
+  color: #10b981 !important;
+}
+
+:root:not(.dark) .text-emerald-500\/50,
+:root:not(.dark) .text-emerald-500\/60,
+:root:not(.dark) .text-emerald-500\/40,
+:root:not(.dark) .text-emerald-400\/60 {
+  color: #6b7280 !important;
+}
+
+:root:not(.dark) .text-emerald-100\/50,
+:root:not(.dark) .text-emerald-100\/40,
+:root:not(.dark) .text-emerald-100\/70,
+:root:not(.dark) .text-emerald-100\/80 {
+  color: #374151 !important;
+}
+
+:root:not(.dark) .bg-emerald-500\/15,
+:root:not(.dark) .bg-emerald-500\/12,
+:root:not(.dark) .bg-emerald-500\/10,
+:root:not(.dark) .bg-emerald-500\/5,
+:root:not(.dark) .bg-emerald-950\/40,
+:root:not(.dark) .bg-emerald-950\/30,
+:root:not(.dark) .bg-emerald-950\/20,
+:root:not(.dark) .bg-emerald-950\/50 {
+  background: #ecfdf5 !important;
+}
