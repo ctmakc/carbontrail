@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Leaf, ArrowRightLeft, ShieldAlert, MapPin, Search,
   Users, ChevronLeft, ChevronRight, TreePine, BookOpen, Info, Network,
   Menu, X, Scale, Eye, Layers, MessageCircle, AlertTriangle, Building,
-  Database, BookMarked, Upload, History,
+  Database, BookMarked, Upload, History, ClipboardList,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 
@@ -24,6 +24,7 @@ const sections = [
     label: "Investigation",
     items: [
       { href: "/loops", label: "Lobby ↔ Funding", icon: Leaf },
+      { href: "/triage", label: "Review Triage", icon: ClipboardList },
       { href: "/greenwash", label: "Greenwash Radar", icon: ShieldAlert },
       { href: "/anomalies", label: "Anomalies", icon: AlertTriangle },
       { href: "/network", label: "Network Graph", icon: Network },

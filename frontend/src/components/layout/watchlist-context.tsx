@@ -21,16 +21,19 @@ const WatchlistContext = createContext<WatchlistState>({
   isWatched: () => false,
 });
 
-export function WatchlistProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<WatchItem[]>([]);
+function getStoredWatchlist(): WatchItem[] {
+  if (typeof window === "undefined") return [];
 
-  // Load from localStorage
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("carbontrail-watchlist");
-      if (stored) setItems(JSON.parse(stored));
-    } catch {}
-  }, []);
+  try {
+    const stored = localStorage.getItem("carbontrail-watchlist");
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function WatchlistProvider({ children }: { children: ReactNode }) {
+  const [items, setItems] = useState<WatchItem[]>(getStoredWatchlist);
 
   // Save to localStorage
   useEffect(() => {

@@ -16,15 +16,17 @@ export default function NetworkPage() {
   const [minScore, setMinScore] = useState(40);
   const [limit, setLimit] = useState(50);
 
-  const load = () => {
-    setLoading(true);
-    fetchAPI<GraphData>("/graph/lobby-network", { min_score: minScore, limit })
-      .then(setData)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  };
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setLoading(true);
+      fetchAPI<GraphData>("/graph/lobby-network", { min_score: minScore, limit })
+        .then(setData)
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }, 0);
 
-  useEffect(() => { load(); }, [minScore, limit]);
+    return () => window.clearTimeout(timer);
+  }, [minScore, limit]);
 
   return (
     <AppShell>

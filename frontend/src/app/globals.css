@@ -199,9 +199,9 @@
   color: #1a2e25;
 }
 
-:root:not(.dark) .bg-\[#080f0d\],
-:root:not(.dark) .bg-\[#0a1210\],
-:root:not(.dark) .bg-\[#060d0b\] {
+:root:not(.dark) .bg-\[\#080f0d\],
+:root:not(.dark) .bg-\[\#0a1210\],
+:root:not(.dark) .bg-\[\#060d0b\] {
   background: #ffffff !important;
 }
 

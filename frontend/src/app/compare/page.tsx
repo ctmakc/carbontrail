@@ -25,10 +25,25 @@ export default function ComparePage() {
   const [loading, setLoading] = useState<"a" | "b" | null>(null);
 
   const doSearch = async (q: string, side: "a" | "b") => {
-    if (side === "a") setSearchA(q); else setSearchB(q);
-    if (q.length < 2) { side === "a" ? setResultsA([]) : setResultsB([]); return; }
+    if (side === "a") {
+      setSearchA(q);
+    } else {
+      setSearchB(q);
+    }
+    if (q.length < 2) {
+      if (side === "a") {
+        setResultsA([]);
+      } else {
+        setResultsB([]);
+      }
+      return;
+    }
     const r = await fetchAPI<SearchResult[]>("/search/", { q, limit: 6 });
-    side === "a" ? setResultsA(r) : setResultsB(r);
+    if (side === "a") {
+      setResultsA(r);
+    } else {
+      setResultsB(r);
+    }
   };
 
   const selectOrg = async (name_norm: string, side: "a" | "b") => {

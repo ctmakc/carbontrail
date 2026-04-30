@@ -5,7 +5,6 @@ import { AppShell } from "@/components/layout/app-shell";
 import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { SpendingTimeline } from "@/components/charts/SpendingTimeline";
 import { ProvinceBar } from "@/components/charts/ProvinceBar";
 import { Layers, ArrowLeft, Users, MapPin, TrendingUp } from "lucide-react";

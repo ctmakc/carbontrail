@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { ArrowRightLeft, TreePine } from "lucide-react";
 import { SankeyFlow } from "@/components/charts/SankeyFlow";
 
@@ -15,14 +13,13 @@ interface Province { province: string; grant_count: number; total_value: number;
 export default function FlowPage() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [provinces, setProvinces] = useState<Province[]>([]);
-  const [loading, setLoading] = useState(true);
   const [sankey, setSankey] = useState<{dept_to_program: any[]; program_to_recipient: any[]} | null>(null);
   useEffect(() => {
     Promise.all([
       fetchAPI<Program[]>("/flow/by-program", { limit: 25 }),
       fetchAPI<Province[]>("/flow/by-province"),
       fetchAPI<{dept_to_program: any[]; program_to_recipient: any[]}>("/flow/sankey", { limit: 15 }),
-    ]).then(([p, pv, s]) => { setPrograms(p); setProvinces(pv); setSankey(s); }).catch(() => {}).finally(() => setLoading(false));
+    ]).then(([p, pv, s]) => { setPrograms(p); setProvinces(pv); setSankey(s); }).catch(() => {});
   }, []);
 
   return (

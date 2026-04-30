@@ -12,6 +12,12 @@ interface Template {
   params: { name: string; type: string; default: string }[];
 }
 
+function getInitialParams(template: Template) {
+  const params: Record<string, string> = {};
+  template.params.forEach(param => { params[param.name] = param.default || ""; });
+  return params;
+}
+
 export default function ExplorerPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selected, setSelected] = useState<Template | null>(null);
@@ -23,14 +29,15 @@ export default function ExplorerPage() {
   useEffect(() => {
     fetchAPI<Template[]>("/explorer/templates").then(t => {
       setTemplates(t);
-      if (t.length) { setSelected(t[0]); initParams(t[0]); }
+      if (t.length) {
+        setSelected(t[0]);
+        setParamValues(getInitialParams(t[0]));
+      }
     });
   }, []);
 
   const initParams = (t: Template) => {
-    const p: Record<string, string> = {};
-    t.params.forEach(param => { p[param.name] = param.default || ""; });
-    setParamValues(p);
+    setParamValues(getInitialParams(t));
   };
 
   const selectTemplate = (t: Template) => {

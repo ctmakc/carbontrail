@@ -2,10 +2,10 @@
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExportCSV } from "@/components/ui/export-button";
-import { Leaf, AlertTriangle } from "lucide-react";
+import { Leaf } from "lucide-react";
 
 interface Loop { org_name: string; org_name_norm: string; lobby_registration_count: number; grant_count: number; grant_value: number; contract_count: number; contract_value: number; sole_source_count: number; total_climate_value: number; loop_signal_score: number; receives_govt_funding: boolean }
 interface LoopStats { total_orgs_with_loops: number; high_signal: number; medium_signal: number; low_signal: number; total_value_in_loops: number; avg_lobby_registrations: number }

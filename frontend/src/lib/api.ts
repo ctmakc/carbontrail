@@ -1,5 +1,3 @@
-const API_BASE = "";  // Proxied through Next.js rewrites
-
 export async function fetchAPI<T>(path: string, params?: Record<string, string | number>): Promise<T> {
   const url = new URL(`/api${path}`, window.location.origin);
   if (params) {

@@ -2,11 +2,11 @@
 "use client";
 import { useEffect, useState, use } from "react";
 import { AppShell } from "@/components/layout/app-shell";
-import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
+import { fetchAPI, formatCurrency } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, Users, DollarSign, FileText, Leaf, ShieldAlert, Sparkles, ArrowLeft, Star, Share2, Printer } from "lucide-react";
+import { Building2, Users, DollarSign, FileText, Leaf, Sparkles, ArrowLeft, Star, Share2, Printer } from "lucide-react";
 import Link from "next/link";
 import { useWatchlist } from "@/components/layout/watchlist-context";
 import { useToast } from "@/components/ui/toast-provider";
@@ -28,7 +28,6 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
   const [graphData, setGraphData] = useState<{nodes: any[]; links: any[]} | null>(null);
   const [timeline, setTimeline] = useState<any[]>([]);
   const [related, setRelated] = useState<any[]>([]);
-  const [score, setScore] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { add, remove, isWatched } = useWatchlist();
   const { toast } = useToast();
@@ -45,8 +44,6 @@ export default function EntityDetailPage({ params }: { params: Promise<{ name: s
       .then(setTimeline).catch(() => {});
     fetchAPI<any[]>(`/recipients/related/${encodeURIComponent(decodedName)}`, { limit: 6 })
       .then(setRelated).catch(() => {});
-    fetchAPI<any>(`/recipients/score/${encodeURIComponent(decodedName)}`)
-      .then(setScore).catch(() => {});
   }, [decodedName]);
 
   const requestAI = async () => {

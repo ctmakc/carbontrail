@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
-import { fetchAPI, formatCurrency, formatNumber } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { fetchAPI, formatCurrency } from "@/lib/api";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExportCSV } from "@/components/ui/export-button";
 import { Users, ArrowRightLeft } from "lucide-react";

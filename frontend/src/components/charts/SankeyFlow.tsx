@@ -14,12 +14,6 @@ const COLORS: Record<string, string> = {
   recipient: "#2dd4bf",
 };
 
-const formatM = (v: number) => {
-  if (v >= 1e9) return `$${(v / 1e9).toFixed(1)}B`;
-  if (v >= 1e6) return `$${(v / 1e6).toFixed(0)}M`;
-  return `$${(v / 1e3).toFixed(0)}K`;
-};
-
 interface SNode {
   name: string;
   type: string;

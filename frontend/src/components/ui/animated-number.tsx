@@ -14,7 +14,10 @@ export function AnimatedNumber({ value, duration = 1200, formatter, className }:
   const frameRef = useRef<number>(0);
 
   useEffect(() => {
-    if (!value) { setDisplay(0); return; }
+    if (!value) {
+      const frame = requestAnimationFrame(() => setDisplay(0));
+      return () => cancelAnimationFrame(frame);
+    }
     const startVal = display;
     const diff = value - startVal;
     startRef.current = null;

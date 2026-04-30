@@ -27,9 +27,11 @@ export default function SearchPage() {
   // Debounced search
   useEffect(() => {
     if (query.length < 2) {
-      setResults([]);
-      setSearched(false);
-      return;
+      const resetTimer = setTimeout(() => {
+        setResults([]);
+        setSearched(false);
+      }, 0);
+      return () => clearTimeout(resetTimer);
     }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {

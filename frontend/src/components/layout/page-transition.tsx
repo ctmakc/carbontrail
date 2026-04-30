@@ -8,12 +8,14 @@ export function PageTransition() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    setLoading(true);
-    setProgress(30);
+    const start = requestAnimationFrame(() => {
+      setLoading(true);
+      setProgress(30);
+    });
     const t1 = setTimeout(() => setProgress(70), 100);
     const t2 = setTimeout(() => { setProgress(100); }, 300);
     const t3 = setTimeout(() => { setLoading(false); setProgress(0); }, 500);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    return () => { cancelAnimationFrame(start); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [pathname]);
 
   if (!loading) return null;
