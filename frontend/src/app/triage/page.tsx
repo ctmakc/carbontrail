@@ -15,6 +15,7 @@ import {
   Flame,
   Link2,
   Plus,
+  Search,
   ShieldAlert,
   Trash2,
 } from "lucide-react";
@@ -166,6 +167,9 @@ export default function TriagePage() {
   const [greenwash, setGreenwash] = useState<GreenwashSignal[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>(getStoredCaseIds);
   const [caseNote, setCaseNote] = useState(getStoredCaseNote);
+  const [query, setQuery] = useState("");
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const [severityFilter, setSeverityFilter] = useState<Severity | "all">("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -253,6 +257,23 @@ export default function TriagePage() {
     });
   }, [greenwash, loops, newVendors, soleSource]);
 
+  const sourceOptions = useMemo(() => Array.from(new Set(leads.map((lead) => lead.source))).sort(), [leads]);
+  const filteredLeads = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return leads.filter((lead) => {
+      const matchesSource = sourceFilter === "all" || lead.source === sourceFilter;
+      const matchesSeverity = severityFilter === "all" || lead.severity === severityFilter;
+      const matchesQuery =
+        !normalizedQuery ||
+        lead.title.toLowerCase().includes(normalizedQuery) ||
+        lead.detail.toLowerCase().includes(normalizedQuery) ||
+        lead.nextStep.toLowerCase().includes(normalizedQuery);
+
+      return matchesSource && matchesSeverity && matchesQuery;
+    });
+  }, [leads, query, severityFilter, sourceFilter]);
+
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
   const caseLeads = useMemo(() => leads.filter((lead) => selectedSet.has(lead.id)), [leads, selectedSet]);
   const criticalCount = leads.filter((lead) => lead.severity === "critical").length;
@@ -285,6 +306,15 @@ export default function TriagePage() {
 
   function toggleLead(id: string) {
     setSelectedIds((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
+  }
+
+  function addVisiblePriorityLeads() {
+    const priorityIds = filteredLeads
+      .filter((lead) => lead.severity === "critical" || lead.severity === "high")
+      .slice(0, 12)
+      .map((lead) => lead.id);
+
+    setSelectedIds((current) => Array.from(new Set([...current, ...priorityIds])));
   }
 
   return (
@@ -325,12 +355,58 @@ export default function TriagePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
           <Metric label="Total leads" value={loading ? "-" : formatNumber(leads.length)} />
+          <Metric label="Visible leads" value={loading ? "-" : formatNumber(filteredLeads.length)} />
           <Metric label="Critical leads" value={loading ? "-" : formatNumber(criticalCount)} tone="red" />
           <Metric label="In case file" value={formatNumber(caseLeads.length)} tone="amber" />
           <Metric label="Case value" value={formatCurrency(caseValue)} tone="emerald" />
         </div>
+
+        <Card className="border-emerald-900/30 bg-[#0a1210]">
+          <CardContent className="grid gap-3 pt-1 md:grid-cols-[minmax(0,1fr)_220px_160px_auto]">
+            <label className="relative block">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-400/50" />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search entity, department, signal, or next step"
+                className="h-10 w-full rounded-lg border border-emerald-900/30 bg-emerald-950/20 pl-9 pr-3 text-sm text-emerald-50 outline-none placeholder:text-emerald-500/40 focus:border-emerald-600/60"
+              />
+            </label>
+            <select
+              value={sourceFilter}
+              onChange={(event) => setSourceFilter(event.target.value)}
+              className="h-10 rounded-lg border border-emerald-900/30 bg-emerald-950/20 px-3 text-sm font-semibold text-emerald-100 outline-none focus:border-emerald-600/60"
+            >
+              <option value="all">All sources</option>
+              {sourceOptions.map((source) => (
+                <option key={source} value={source}>
+                  {source}
+                </option>
+              ))}
+            </select>
+            <select
+              value={severityFilter}
+              onChange={(event) => setSeverityFilter(event.target.value as Severity | "all")}
+              className="h-10 rounded-lg border border-emerald-900/30 bg-emerald-950/20 px-3 text-sm font-semibold text-emerald-100 outline-none focus:border-emerald-600/60"
+            >
+              <option value="all">All severity</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+            </select>
+            <button
+              type="button"
+              onClick={addVisiblePriorityLeads}
+              disabled={filteredLeads.length === 0}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-amber-700/40 bg-amber-500/10 px-3 text-sm font-semibold text-amber-300 transition hover:bg-amber-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Plus className="h-4 w-4" />
+              Add visible priority
+            </button>
+          </CardContent>
+        </Card>
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
           <Card className="border-emerald-900/30 bg-[#0a1210]">
@@ -403,7 +479,7 @@ export default function TriagePage() {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {leads.slice(0, 28).map((lead) => {
+                  {filteredLeads.slice(0, 28).map((lead) => {
                     const selected = selectedSet.has(lead.id);
                     return (
                       <article
