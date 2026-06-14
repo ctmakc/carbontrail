@@ -2,6 +2,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from ..db import query
+from ..services import llm
 from ..services.ai import explain_pattern
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
@@ -61,9 +62,6 @@ TOP CLIMATE PROGRAMS:
 @router.post("/")
 def chat(msg: ChatMessage):
     """Process a chat message about climate spending data"""
-    import json, os, logging
-    logger = logging.getLogger(__name__)
-
     context = _get_context()
 
     system = """You are CarbonTrail's AI analyst. You help users explore Canadian climate spending data interactively.
@@ -76,24 +74,8 @@ When asked about specific organizations, refer to the data context. If the data 
 
 """ + context
 
-    try:
-        import boto3
-        client = boto3.client("bedrock-runtime", region_name=os.environ.get("AWS_REGION", "us-east-1"))
-        model = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0")
-
-        response = client.invoke_model(
-            modelId=model,
-            body=json.dumps({
-                "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 600,
-                "system": system,
-                "messages": [{"role": "user", "content": msg.message}],
-            }),
-        )
-        body = json.loads(response["body"].read())
-        reply = body["content"][0]["text"]
-    except Exception as e:
-        logger.warning(f"Bedrock chat failed: {e}")
+    reply = llm.chat(system, msg.message, max_tokens=700)
+    if reply is None:
         # Fallback — answer common questions from data
         reply = _fallback_chat(msg.message, context)
 

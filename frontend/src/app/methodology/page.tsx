@@ -1,7 +1,7 @@
 "use client";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Target, Leaf, ShieldAlert, MapPin, ArrowRightLeft } from "lucide-react";
+import { BookOpen, Target, Leaf, ShieldAlert, MapPin, ArrowRightLeft, Database } from "lucide-react";
 
 export default function MethodologyPage() {
   return (
@@ -17,13 +17,40 @@ export default function MethodologyPage() {
           </div>
         </div>
 
+        {/* Prominent top-level disclaimer */}
+        <div className="rounded-xl border border-amber-600/30 bg-amber-950/30 p-4">
+          <p className="text-sm text-amber-200/80 leading-relaxed">
+            <span className="font-semibold text-amber-300">Read this first.</span> Everything on
+            CarbonTrail is a <strong>review signal</strong> derived from public records — a pattern
+            that may warrant a closer look. Nothing here is an allegation, finding of wrongdoing, or
+            conclusion. Lobbying is legal and frequently legitimate, and receiving public funding is
+            not evidence of anything improper. Every signal requires independent verification against
+            the underlying source records before it should be relied upon or repeated.
+          </p>
+        </div>
+
+        <Section icon={Database} title="Data Sources" color="sky">
+          <p>All inputs are Canadian public datasets published as Open Data under the
+            {" "}<strong>Open Government Licence — Canada</strong>:</p>
+          <ul className="list-disc list-inside space-y-1 mt-2">
+            <li><strong>PSPC Contracts</strong> — federal procurement / contract disclosure</li>
+            <li><strong>Federal Grants &amp; Contributions</strong> — proactive grant disclosure</li>
+            <li><strong>Lobbyist Registry</strong> — registrations and subject-matter codes from the Commissioner of Lobbying</li>
+            <li><strong>T3010 Charity Returns</strong> — registered charities and directors from the CRA</li>
+          </ul>
+          <p className="mt-2 text-emerald-500/50 text-xs">We re-publish and cross-link these
+            records; we do not alter the underlying source data. Figures shown across the site are
+            approximate and reflect the most recent ETL refresh — they change when the pipeline is
+            re-run against updated public data.</p>
+        </Section>
+
         <Section icon={Target} title="Climate Relevance Tagging" color="emerald">
           <p>Every contract and grant is tagged as &ldquo;climate-relevant&rdquo; if it meets either criterion:</p>
           <ul className="list-disc list-inside space-y-1 mt-2">
             <li><strong>Department match:</strong> Issued by ECCC, NRCan, Transport Canada, Infrastructure Canada, Agriculture, Fisheries, or related departments</li>
-            <li><strong>Topic match:</strong> Description contains climate-related keywords: clean energy, renewable, emission, carbon, hydrogen, electric vehicle, biodiversity, conservation, sustainable, GHG, net zero, etc.</li>
+            <li><strong>Topic match:</strong> Organisation title and description are matched against climate-related keywords (clean energy, renewable, emission, carbon, hydrogen, electric vehicle, biodiversity, conservation, sustainable, GHG, net zero, etc.) using SQL <code>LIKE</code>-pattern matching.</li>
           </ul>
-          <p className="mt-2 text-emerald-500/50 text-xs">This is intentionally broad. We&apos;d rather include non-climate items than miss real ones. Users should review individual records for precise relevance.</p>
+          <p className="mt-2 text-emerald-500/50 text-xs">This tagging is <strong>heuristic</strong>, not authoritative. Keyword <code>LIKE</code>-matching is intentionally broad and <strong>will produce false positives and false negatives</strong> — it can catch records that are not really climate-related and miss ones that are. We&apos;d rather over-include than miss real items, so users should review individual records for precise relevance.</p>
         </Section>
 
         <Section icon={Leaf} title="Lobby ↔ Funding Loop Detection" color="amber">
@@ -39,7 +66,8 @@ export default function MethodologyPage() {
             <li>Sole-source contracts: +15 if any</li>
             <li>Dual recipient (grants + contracts): +10</li>
           </ul>
-          <p className="mt-2 text-amber-400/60">⚠️ A high score does NOT indicate wrongdoing. It indicates a pattern that warrants review.</p>
+          <p className="mt-2 text-amber-400/60">⚠️ A high score does NOT indicate wrongdoing. It indicates a pattern that may warrant review.</p>
+          <p className="mt-2 text-emerald-500/50 text-xs">Loops are computed by <strong>cross-matching organisation names</strong> across the lobbying and funding datasets. Name-matching is imperfect: the same organisation can appear under slightly different names, and unrelated organisations can share similar names, so this method <strong>can produce false positives</strong> (and miss genuine matches). Treat every loop as a lead to verify against the source records, not as a confirmed relationship.</p>
         </Section>
 
         <Section icon={ShieldAlert} title="Greenwash Signal Detection" color="red">
@@ -51,7 +79,7 @@ export default function MethodologyPage() {
             </div>
             <div className="rounded-lg border border-red-900/20 p-3">
               <p className="font-medium text-red-300 text-xs">🌐 Broad Spectrum Lobbying</p>
-              <p className="mt-1">Organization lobbies across 8+ subject areas. Suggests an influence-maximizing strategy that may dilute genuine climate commitment.</p>
+              <p className="mt-1">Organization lobbies across 8+ subject areas. This is a breadth pattern that may warrant review; it has many legitimate explanations and is not by itself evidence of diluted climate commitment.</p>
             </div>
           </div>
           <p className="mt-2 text-emerald-500/50 text-xs">Subject matter codes from the Lobbyist Registry: SMT-13 (Environment), SMT-10 (Energy), SMT-25 (Natural Resources), SMT-7 (Infrastructure).</p>

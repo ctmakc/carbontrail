@@ -1,0 +1,22 @@
+# Local virtualenv — never ship into the image
+.venv/
+uv.lock
+
+# Generated DuckDB database — large (~1.2GB), mounted as a volume at runtime
+data/*.duckdb
+
+# Python caches / artifacts
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+
+# Tests are not needed in the runtime image
+tests/
+
+# Env files
+.env
+.env.*
+!.env.example

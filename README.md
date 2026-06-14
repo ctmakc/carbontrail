@@ -1,7 +1,8 @@
 # 🌍 CarbonTrail — Follow the Green Money
 
 > Climate spending intelligence for Canadian public funding.
-> Track where $321B+ in green money goes, who lobbies for it, and what patterns emerge.
+> Track where ~$321B in green money goes, who lobbies for it, and what patterns emerge.
+> Figures are approximate and as of the last data refresh.
 
 [![GitHub](https://img.shields.io/badge/GitHub-ctmakc%2Fcarbontrail-emerald?style=flat&logo=github)](https://github.com/ctmakc/carbontrail)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat&logo=python)
@@ -10,7 +11,7 @@
 
 ## Why This Exists
 
-Canada spends **$321B+** through climate-related departments. **70,000+ lobbying registrations** target these departments. **Nobody connects the dots.**
+Canada spends an estimated **~$321B** through climate-related departments, and roughly **70,000 lobbying registrations** target these departments. These public datasets are normally siloed, and few tools connect them.
 
 CarbonTrail cross-references procurement, grants, and lobbying data to make climate spending transparent. **We are pro-climate** — transparent spending builds public trust. Public trust protects climate budgets.
 
@@ -112,12 +113,19 @@ npm run dev              # http://localhost:3000
 
 ## Key Findings
 
-- **$321B+** tracked in climate-related spending
-- **2,262** lobby-to-funding loops detected
-- **3,559** dual recipients (grants + contracts from same depts)
-- **$8.6B** in 100% sole-source contracts (Chantier Davie)
-- **5,585** greenwash signals
-- **NextStar Energy**: $14.5B grant + 6 lobbying registrations
+> All figures are **approximate and as of the last data refresh**. They are derived from public
+> records and update whenever the ETL pipeline re-runs. Every item below is a **review signal** — a
+> pattern that may warrant a closer look — not an allegation or a finding of wrongdoing. Lobbying is
+> legal and often legitimate, and receiving public funding is not evidence of anything improper.
+> Name cross-matching and keyword tagging are heuristic and can produce false positives, so each
+> signal requires independent verification against the source records.
+
+- **~$321B** tracked in climate-related public spending
+- **~2,262** lobby-to-funding loops detected (org-name cross-match; may include false positives)
+- **~3,559** dual recipients (grants + contracts from same departments)
+- **~$8.6B** in contracts recorded as 100% sole-source (e.g. Chantier Davie) — a procurement pattern to review, not an irregularity in itself
+- **~2,776** greenwash review signals (anomalous lobbying-breadth patterns)
+- **NextStar Energy**: ~$14.5B grant alongside 6 lobbying registrations — a pattern shown for review, drawn from public records
 
 ## Principles
 

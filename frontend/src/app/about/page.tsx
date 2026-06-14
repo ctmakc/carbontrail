@@ -49,7 +49,8 @@ export default function AboutPage() {
           <CardContent className="space-y-3 text-sm text-emerald-200/60">
             <p>CarbonTrail is a transparency tool, not an investigative conclusion. All findings are review signals based on publicly available data.</p>
             <p>Lobbying is legal and often appropriate. The presence of lobbying alongside funding receipt is common and may reflect legitimate sector engagement.</p>
-            <p>Entity resolution is approximate. Organizations may appear under different names across registries.</p>
+            <p>Entity resolution is approximate and relies on name cross-matching, which can produce false positives. Organizations may appear under different names across registries, and similarly named but unrelated organizations may be matched together. Climate tagging is heuristic keyword matching and may include or omit records incorrectly.</p>
+            <p>Headline figures are approximate and reflect the most recent data refresh; they update whenever the ETL pipeline re-runs.</p>
             <p>This platform does not constitute legal, financial, or professional advice.</p>
           </CardContent>
         </Card>

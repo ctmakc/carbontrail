@@ -1,22 +1,13 @@
 """
-CarbonTrail AI Service — AWS Bedrock / Claude
+CarbonTrail AI Service — local Ollama-Cloud LLM
 Generates human-readable explanations for climate spending patterns.
 """
 import json
-import os
 import logging
 
+from . import llm
+
 logger = logging.getLogger(__name__)
-
-# Try to import boto3 for Bedrock
-try:
-    import boto3
-    HAS_BEDROCK = True
-except ImportError:
-    HAS_BEDROCK = False
-
-MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0")
-AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 SYSTEM_PROMPT = """You are CarbonTrail's climate spending analyst. You analyze patterns in Canadian public climate funding data — contracts, grants, and lobbying registrations.
 
@@ -31,22 +22,8 @@ Your role:
 Format your responses in concise paragraphs. Use markdown sparingly (bold for emphasis only). Keep responses under 300 words."""
 
 
-def _get_client():
-    if not HAS_BEDROCK:
-        return None
-    try:
-        return boto3.client("bedrock-runtime", region_name=AWS_REGION)
-    except Exception as e:
-        logger.warning(f"Bedrock client init failed: {e}")
-        return None
-
-
 def explain_pattern(pattern_type: str, data: dict) -> str:
     """Generate AI explanation for a climate spending pattern."""
-    client = _get_client()
-    if client is None:
-        return _fallback_explanation(pattern_type, data)
-
     prompts = {
         "lobby_loop": f"""Analyze this lobby-to-funding loop in Canadian climate spending:
 
@@ -129,21 +106,10 @@ Provide a brief, balanced analysis.""",
 
     prompt = prompts.get(pattern_type, prompts["general"])
 
-    try:
-        response = client.invoke_model(
-            modelId=MODEL_ID,
-            body=json.dumps({
-                "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 500,
-                "system": SYSTEM_PROMPT,
-                "messages": [{"role": "user", "content": prompt}],
-            }),
-        )
-        body = json.loads(response["body"].read())
-        return body["content"][0]["text"]
-    except Exception as e:
-        logger.error(f"Bedrock call failed: {e}")
+    reply = llm.chat(SYSTEM_PROMPT, prompt, max_tokens=600)
+    if reply is None:
         return _fallback_explanation(pattern_type, data)
+    return reply
 
 
 def _fallback_explanation(pattern_type: str, data: dict) -> str:

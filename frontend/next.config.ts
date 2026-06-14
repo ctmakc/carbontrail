@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 import path from "node:path";
 
 const nextConfig: NextConfig = {
+  // Produce a self-contained build (.next/standalone/server.js) for slim Docker images
+  output: "standalone",
   turbopack: {
     root: path.resolve(__dirname),
   },

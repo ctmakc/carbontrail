@@ -26,6 +26,14 @@ export function Footer() {
             Built with <Heart className="h-3 w-3 text-red-500/40" /> for climate accountability
           </div>
         </div>
+
+        <p className="mt-4 text-[10px] leading-relaxed text-emerald-700/80">
+          All figures are approximate and as of the last data refresh. Findings are review signals
+          derived from public records — patterns that may warrant review, not allegations or findings
+          of wrongdoing. Lobbying is legal and often legitimate, and receiving public funding is not
+          evidence of anything improper. Every signal requires independent verification against the
+          source records.
+        </p>
       </div>
     </footer>
   );

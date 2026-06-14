@@ -94,8 +94,9 @@ export default function DashboardPage() {
                 Climate Spending Intelligence
               </h1>
               <p className="text-sm text-emerald-400/60">
-                Tracking <span className="text-emerald-400 font-semibold">$321B+</span> in Canadian
-                climate-related public funding — because every green dollar deserves accountability
+                Tracking <span className="text-emerald-400 font-semibold">~$321B</span> in Canadian
+                climate-related public funding (approximate, as of the last data refresh) — because
+                every green dollar deserves accountability
               </p>
             </div>
           </div>
@@ -202,6 +203,15 @@ export default function DashboardPage() {
               wide
             />
           </div>
+        ) : null}
+
+        {/* Data freshness note */}
+        {stats ? (
+          <p className="text-[11px] text-emerald-500/40 -mt-4">
+            Figures above are approximate and reflect the most recent data refresh. Counts and totals
+            change each time the ETL pipeline re-runs against updated public records, so treat them as
+            point-in-time snapshots rather than fixed values.
+          </p>
         ) : null}
 
         {/* Two columns */}
