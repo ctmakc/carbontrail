@@ -14,7 +14,14 @@ export default function AboutPage() {
             <p className="text-sm text-emerald-400/60">Why we built this and what we believe</p>
           </div>
         </div>
-        <Card className="border-emerald-600/20 bg-gradient-to-br from-emerald-950/60 to-teal-950/40">
+        <Card
+          className="relative overflow-hidden border-emerald-600/20 bg-gradient-to-br from-emerald-950/60 to-teal-950/40"
+          style={{
+            backgroundImage: "linear-gradient(to bottom right, rgba(4,20,16,0.88), rgba(2,15,13,0.93)), url(/images/hero-network.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
           <CardContent className="pt-6 space-y-4 text-sm text-emerald-200/80 leading-relaxed">
             <p className="text-lg text-emerald-100 font-medium">We built CarbonTrail because we believe climate spending works better in the light.</p>
             <p>Canada invests hundreds of billions in environmental protection, clean energy, sustainable infrastructure, and climate adaptation. This is essential work. We support it fully.</p>

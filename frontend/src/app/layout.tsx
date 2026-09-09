@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   icons: {
     icon: "/favicon.svg",
+    apple: "/images/icon-512.png",
   },
   manifest: "/manifest.json",
   title: "CarbonTrail — Follow the Green Money",
@@ -25,11 +26,20 @@ export const metadata: Metadata = {
     description: "Where do Canada's climate billions go? Track $321B+ in contracts, grants, and lobbying data.",
     type: "website",
     siteName: "CarbonTrail",
+    images: [
+      {
+        url: "/images/og-image.png",
+        width: 1376,
+        height: 768,
+        alt: "CarbonTrail — a glowing maple leaf formed from Canada's climate money flows",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "CarbonTrail — Follow the Green Money",
     description: "Climate spending intelligence for Canadian public funding.",
+    images: ["/images/og-image.png"],
   },
 };
 
